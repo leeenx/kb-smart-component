@@ -1,0 +1,35 @@
+{
+  "compilerOptions": {
+    "strictNullChecks": true,
+    "noImplicitAny": false,
+    "module": "CommonJS",
+    "target": "ES5",
+    "allowJs": true,
+    "experimentalDecorators": true,
+    "noImplicitThis": true,
+    "noImplicitReturns": true,
+    "alwaysStrict": true,
+    "skipLibCheck": true,
+    "inlineSourceMap": true,
+    "inlineSources": true,
+    "noFallthroughCasesInSwitch": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "strict": true,
+    "removeComments": true,
+    "moduleResolution": "node",
+    "baseUrl": ".",
+    "outDir": "./dist/",
+    "pretty": true,
+    "strictPropertyInitialization": true,
+    "typeRoots": [
+      "./node_modules/@types/"
+    ],
+    "importHelpers": true,
+    "lib": ["es5", "es2016"]
+  },
+  "include": ["./**/*.ts", "./src/**/*.js"],
+  "exclude": ["node_modules", "dist", "**/*.test.ts"]
+}
