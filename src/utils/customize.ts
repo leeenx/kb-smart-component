@@ -169,7 +169,10 @@ export default class Customize {
     return function() {
       const customize = new Customize(parentGlobal);
       const args = arguments;
+      // 在函数上下文挂载 arguments
       customize.const('arguments', arguments);
+      // 在函数上下文中挂载 this
+      customize.const('this', this);
       params.forEach((name, index) => {
         // 形参用 let 不用 const
         customize.let(name!, args[index]);
