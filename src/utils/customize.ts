@@ -224,9 +224,8 @@ export default class Customize {
     return new RegExp(pattern, modifiers);
   }
   // new Class
-  newClass(params: string[], body: DslJson[]) {
-    // 模拟一个类
-    const fakeClass = this.createFunction(false, params, body) as () => void;
+  newClass(identifier: string, params?: any[]) {
+    const fakeClass = this.getFunction(identifier, params);
     return new fakeClass();
   }
   /** react 相关接口 */
