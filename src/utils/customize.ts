@@ -170,10 +170,10 @@ export default class Customize {
     }
   }
   // 创建拟函数
-  createFunction(isAsync: boolean = false, params: string[], body: DslJson[]) {
+  createFunction(isAsync: boolean = false, params: string[], body: DslJson[], functionName?: string) {
     const parentGlobal = this.global;
     const functionQueue = this.functionQueue.bind(this);
-    return function() {
+    const anonymousFn = function() {
       const customize = new Customize(parentGlobal);
       const args = arguments;
       // 在函数上下文挂载 arguments
@@ -208,6 +208,16 @@ export default class Customize {
         }
       }
     };
+    if (functionName) {
+      // 有函数名
+      this.const(functionName, anonymousFn);
+    }
+    return anonymousFn;
+  }
+  // 创建块作用域
+  createBlockStatement(body: DslJson[]) {
+    const blockStatementFn = this.createFunction(false, [], body);
+    blockStatementFn();
   }
   // 打印函数
   'console.log'() {
