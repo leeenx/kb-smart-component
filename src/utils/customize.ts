@@ -13,6 +13,13 @@ import * as R from 'ramda';
 // type
 import type { DslJson } from "./dsl-resolver";
 
+interface FunctionNode {
+  type: string;
+  isAsync?: boolean;
+  params: string[];
+  body: DslJson[];
+}
+
 // 自定义的方法
 export default class Customize {
   constructor(parentGlobal?: any) {
@@ -224,8 +231,15 @@ export default class Customize {
     return new RegExp(pattern, modifiers);
   }
   // new Class
-  newClass(identifier: string, params?: any[]) {
-    const fakeClass = this.getFunction(identifier, params);
+  newClass(identifier: string | FunctionNode, params?: any[]) {
+    if (typeof identifier === 'string') {
+      // @ts-ignore
+      return new this.getFunction(identifier, params);
+    }
+    // 函数表达式，需要创建一个函数
+    const { isAsync, params: funParams, body } = identifier;
+    const fakeClass = this.createFunction(isAsync, funParams, body);
+    // @ts-ignore
     return new fakeClass();
   }
   /** react 相关接口 */
