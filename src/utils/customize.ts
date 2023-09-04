@@ -172,6 +172,7 @@ export default class Customize {
       // 在函数上下文挂载 arguments
       customize.const('arguments', arguments);
       // 在函数上下文中挂载 this
+      // @ts-ignore
       customize.const('this', this);
       params.forEach((name, index) => {
         // 形参用 let 不用 const
@@ -195,23 +196,38 @@ export default class Customize {
         });
         const result = customize.returnObject?.result;
         customize.returnObject = null;
-        return result;
+        if (typeof result !== 'undefined') {
+          return result;
+        }
       }
     };
   }
   // 打印函数
   'console.log'() {
+    // @ts-ignore
     console.log(...arguments);
   }
   'console.info'() {
+    // @ts-ignore
     console.info(...arguments);
   }
   'console.error'() {
+    // @ts-ignore
     console.error(...arguments);
   }
   // ifElse 函数改造
   ifElse(condition: boolean, onTrue: Function, onFail: Function) {
     return R.ifElse((isTrue: boolean) => isTrue && condition, onTrue, onFail)(R.T);
+  }
+  // new RegExp
+  getRegExp(pattern: string, modifiers: string) {
+    return new RegExp(pattern, modifiers);
+  }
+  // new Class
+  newClass(params: string[], body: DslJson[]) {
+    // 模拟一个类
+    const fakeClass = this.createFunction(false, params, body) as () => void;
+    return new fakeClass();
   }
   /** react 相关接口 */
   // 渲染函数
