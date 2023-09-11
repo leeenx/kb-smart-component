@@ -48,26 +48,34 @@ Component({
   },
   detached() {
     // 销毁
+    // @ts-ignore
     if (this.mpRender) {
-        this.mpRender.document.body.$$recycle(); // 回收 dom 节点
-        this.mpRender.window.$$destroy();
+      // @ts-ignore
+      this.mpRender.document.body.$$recycle(); // 回收 dom 节点
+      // @ts-ignore
+      this.mpRender.window.$$destroy();
     }
+    // @ts-ignore
     mp.destroyPage(this.pageId);
   },
   methods: {
     // 执行渲染
     render() {
+      // @ts-ignore
       const MyComponent = dslResolve(this.properties.dslJson);
       ReactDOM.render(
         createElement(MyComponent, this.properties.props, null),
+        // @ts-ignore
         this.container
       );
+      // @ts-ignore
       this.setData({ pageId: this.mpRender.pageId });
     },
   },
   // 监听
   observers: {
-    'dslJson, props'(dslJson, props) {
+    'dslJson, props'() {
+      // @ts-ignore
       if (this.hasAttached) {
         this.render();
       }
