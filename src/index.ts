@@ -1,7 +1,31 @@
 import mp from 'miniprogram-render';
-import { createElement } from 'react';
+import React from "react";
 import ReactDOM from 'react-dom';
 import dslResolve from './utils/dsl-resolver';
+
+const {
+  createElement,
+  useState,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useMemo,
+  useCallback,
+} = React;
+
+// 动态挂载 React
+Object.assign(global, {
+  React,
+  /** react 相关接口 */
+  // 渲染函数
+  createElement,
+  useState,
+  useEffect,
+  useMemo,
+  useLayoutEffect,
+  useRef,
+  useCallback
+});
 
 const config = {
 	"optimization": {

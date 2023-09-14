@@ -1,6 +1,6 @@
 // @ts-ignore
-import * as R from 'ramda';
-import Customize, { userDefineFns } from './customize';
+import * as _ from 'lodash-es';
+import Customize from './customize';
 
 export interface DslJson {
   type: 'literal' | 'array-literal' | 'object-literal' | 'call-function' | 'customize-function' | 'component',
@@ -19,22 +19,23 @@ export interface DslJson {
 
 const dslResolve = (dslJson: DslJson | string, customize?: Customize) => {
   // 变量的上下文也在这里
-  if (R.is(Object, dslJson)) {
+  if (_.isObject(dslJson)) {
     customize = customize || new Customize();
-    const { type, isAsync, name = '', value, params = [], body = [] } = dslJson as DslJson;
+    const { type, name = '', value, params = [], body = [] } = dslJson as DslJson;
     switch(type) {
-      // 调用函数
+      /**
+       * 直接调用内置解析函数
+       * 当 name 为 callFun 时，才是逻辑上的调用函数
+       */
       case 'call-function': {
-        const functionParams: any[] = (Array.isArray(value) ? value : [value]).map(item => dslResolve(item, customize));
+        const paramsDsl: DslJson[] = Array.isArray(value) ? value : [value];
+        const functionParams: any[] = paramsDsl;
         if (customize[name as keyof Customize]) {
           // 优先从「customize」找
           return customize[name as keyof Customize]?.(...functionParams);
-        } else if (userDefineFns[name]) {
-          // 其次从「userDefineFns」找
-          return userDefineFns[name]?.(...functionParams);
-        } else if (R.hasOwnProperty(name)) {
+        } else if (_.hasOwnProperty(name)) {
           // 兜底使用「RamdaJs」
-          return R[name]?.(...functionParams);
+          return _[name]?.(...functionParams);
         } else {
           throw new Error(`未定义的 call-function: ${name}`);
         }
@@ -43,13 +44,13 @@ const dslResolve = (dslJson: DslJson | string, customize?: Customize) => {
       case 'customize-function':
       // 创建组件
       case 'component':
-        return customize.createFunction(isAsync, params, body);
+        return customize.createFunction(params, body, name);
       case 'array-literal':
-        return value.map((item: any) => dslResolve(item, customize));
+        return ([...value]).map((item: any) => dslResolve(item, customize));
       case 'object-literal': {
         const obj: any = {};
-        Object.entries(value).forEach(([key, value]) => {
-          obj[key] = dslResolve(value as any, customize);
+        value.forEach(({ key, value: valueDsl }) => {
+          obj[key] = dslResolve(valueDsl, customize);
         });
         return obj;
       }

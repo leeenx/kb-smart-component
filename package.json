@@ -39,10 +39,10 @@
     "webpack-cli": "^5.0.1"
   },
   "dependencies": {
-    "ramda": "^0.29.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "lodash-es": "^4.17.21",
     "miniprogram-element": "^2.2.13",
-    "miniprogram-render": "^2.2.25"
+    "miniprogram-render": "^2.2.25",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   }
 }
