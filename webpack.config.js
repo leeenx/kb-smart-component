@@ -12,6 +12,9 @@ module.exports = {
     filename: '[name].js',
     publicPath: '/',
   },
+  optimization: {
+    minimize: false
+  },
   externals: {
     'miniprogram-element': `require("miniprogram-element")`,
     'miniprogram-render': `require("miniprogram-render")`

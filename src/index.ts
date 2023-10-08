@@ -1,7 +1,7 @@
 import mp from 'miniprogram-render';
 import React from "react";
 import ReactDOM from 'react-dom';
-import dslResolve from './utils/dsl-resolver';
+import resolve, { registerToGlobleScope } from 'kbs-dsl-resolver';
 
 const {
   createElement,
@@ -14,7 +14,7 @@ const {
 } = React;
 
 // 动态挂载 React
-Object.assign(global, {
+registerToGlobleScope({
   React,
   /** react 相关接口 */
   // 渲染函数
@@ -85,8 +85,8 @@ Component({
   methods: {
     // 执行渲染
     render() {
-      // @ts-ignore
-      const MyComponent = dslResolve(this.properties.dslJson);
+      // commonjs 标准
+      const MyComponent = resolve(this.properties.dslJson).default;
       ReactDOM.render(
         createElement(MyComponent, this.properties.props, null),
         // @ts-ignore
