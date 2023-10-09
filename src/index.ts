@@ -2,6 +2,7 @@ import mp from 'miniprogram-render';
 import React from "react";
 import ReactDOM from 'react-dom';
 import resolve, { registerToGlobleScope } from 'kbs-dsl-resolver';
+import dslLoad from 'kbs-dsl-loader';
 
 const {
   createElement,
@@ -46,9 +47,18 @@ const config = {
 
 Component({
   properties: {
+    watch: {
+      type: Boolean,
+      value: false
+    },
     dslJson: {
-      type: Object,
-      value: undefined,
+      type: Object
+    },
+    url: {
+      type: String
+    },
+    dslUrl: {
+      type: String
     },
     props: {
       type: Object,
@@ -83,22 +93,39 @@ Component({
     mp.destroyPage(this.pageId);
   },
   methods: {
-    // 执行渲染
-    render() {
+    // 刷新组件
+    update(dslJson) {
       // commonjs 标准
-      const MyComponent = resolve(this.properties.dslJson).default;
+      const MyComponent = resolve(dslJson).default;
       ReactDOM.render(
         createElement(MyComponent, this.properties.props, null),
         // @ts-ignore
         this.container
       );
+    },
+    // 执行渲染
+    async render() {
+      let dslJson = this.properties.dslJson;
+      if (!dslJson) {
+        dslJson = await dslLoad({
+          url: this.properties.url || this.properties.dslUrl || '',
+          fromHtml: Boolean(this.properties.url),
+          watch: this.properties.watch,
+          watchOptions: {
+            update: (dslJson) => {
+              this.update(dslJson)
+            }
+          }
+        });
+      }
+      this.update(dslJson);
       // @ts-ignore
       this.setData({ pageId: this.mpRender.pageId });
     },
   },
   // 监听
   observers: {
-    'dslJson, props'() {
+    'dslJson, url, dslUrl, props'() {
       // @ts-ignore
       if (this.hasAttached) {
         this.render();
