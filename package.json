@@ -1,8 +1,8 @@
 {
   "name": "kb-smart-component",
-  "version": "0.0.12",
+  "version": "0.0.14",
   "description": "基于 kbone 的异步加载组件的渲染器",
-  "main": "./src/index.js",
+  "main": "./dist/index.js",
   "miniprogram": "dist",
   "scripts": {
     "build": "rimraf dist && webpack --config ./webpack.config.js --progress"
