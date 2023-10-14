@@ -17,7 +17,9 @@ module.exports = {
   },
   externals: {
     'miniprogram-element': `require("miniprogram-element")`,
-    'miniprogram-render': `require("miniprogram-render")`
+    'miniprogram-render': `require("miniprogram-render")`,
+    'kbs-dsl-loader': `require("kbs-dsl-loader")`,
+    'kbs-dsl-resolver': `require("kbs-dsl-resolver")`
   },
   module: {
     rules: [
