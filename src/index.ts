@@ -63,19 +63,6 @@ const config = {
 
 Component({
   properties: {
-    watch: {
-      type: Boolean,
-      value: false
-    },
-    dslJson: {
-      type: Object
-    },
-    url: {
-      type: String
-    },
-    dslUrl: {
-      type: String
-    },
     props: {
       type: Object,
       value: undefined,
