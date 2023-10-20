@@ -4,6 +4,22 @@ import ReactDOM from 'react-dom';
 import resolve, { registerToGlobleScope } from 'kbs-dsl-resolver';
 import dslLoad from 'kbs-dsl-loader';
 
+interface WatchOptions {
+  protocol?: 'ws';
+  host?: string;
+  port?: number;
+  entry?: string;
+}
+
+interface Props {
+  watch?: boolean;
+  watchOptions?: WatchOptions;
+  dslJson?: Object;
+  url?: string;
+  dslUrl?: string;
+  nameSpace?: string;
+}
+
 const {
   createElement,
   useState,
@@ -95,25 +111,34 @@ Component({
   methods: {
     // 刷新组件
     update(dslJson) {
+      // @ts-ignore
+      const nameSpace = this.properties.props.nameSpace || this.pageId;
       // commonjs 标准
-      const MyComponent = resolve(dslJson).default;
+      const { default: MyComponent } = resolve(dslJson, nameSpace);
       ReactDOM.render(
-        createElement(MyComponent, this.properties.props, null),
+        createElement(MyComponent, null, null),
         // @ts-ignore
         this.container
       );
     },
     // 执行渲染
     async render() {
-      let dslJson = this.properties.dslJson;
+      let {
+        dslJson,
+        url,
+        dslUrl,
+        watch,
+        watchOptions
+      } = this.properties.props as Props;
       if (!dslJson) {
         dslJson = await dslLoad({
-          url: this.properties.url || this.properties.dslUrl || '',
-          fromHtml: Boolean(this.properties.url),
-          watch: this.properties.watch,
+          url: url || dslUrl || '',
+          fromHtml: Boolean(url),
+          watch,
           watchOptions: {
-            update: (dslJson) => {
-              this.update(dslJson)
+            ...watchOptions,
+            update: (newDslJson) => {
+              this.update(newDslJson)
             }
           }
         });
@@ -125,7 +150,7 @@ Component({
   },
   // 监听
   observers: {
-    'dslJson, url, dslUrl, props'() {
+    'props'() {
       // @ts-ignore
       if (this.hasAttached) {
         this.render();
