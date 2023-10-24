@@ -1,8 +1,10 @@
 import mp from 'miniprogram-render';
 import React from "react";
 import ReactDOM from 'react-dom';
+import * as kboneUI from 'kbone-ui';
 import resolve, { registerToGlobleScope } from 'kbs-dsl-resolver';
 import dslLoad from 'kbs-dsl-loader';
+import isEqual from 'lodash-es/isEqual';
 
 interface WatchOptions {
   protocol?: 'ws';
@@ -41,7 +43,8 @@ registerToGlobleScope({
   useMemo,
   useLayoutEffect,
   useRef,
-  useCallback
+  useCallback,
+  ...kboneUI
 });
 
 const config = {
@@ -97,11 +100,11 @@ Component({
   },
   methods: {
     // 刷新组件
-    update(dslJson) {
+    update(dslJson, hotUpdating = false) {
       // @ts-ignore
       const nameSpace = this.properties.props.nameSpace || this.pageId;
       // commonjs 标准
-      const { default: MyComponent } = resolve(dslJson, nameSpace);
+      const { default: MyComponent } = resolve(dslJson, nameSpace, hotUpdating);
       ReactDOM.render(
         createElement(MyComponent, null, null),
         // @ts-ignore
@@ -125,7 +128,7 @@ Component({
           watchOptions: {
             ...watchOptions,
             update: (newDslJson) => {
-              this.update(newDslJson)
+              this.update(newDslJson, true);
             }
           }
         });
@@ -137,7 +140,14 @@ Component({
   },
   // 监听
   observers: {
-    'props'() {
+    'props'(props) {
+      // @ts-ignore
+      if (isEqual(this.prevProps, props)) {
+        // 表示不需要更新
+        return;
+      }
+      // @ts-ignore
+      this.prevProps = props;
       // @ts-ignore
       if (this.hasAttached) {
         this.render();

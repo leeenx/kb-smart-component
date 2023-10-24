@@ -13,7 +13,7 @@ module.exports = {
     publicPath: '/',
   },
   optimization: {
-    minimize: false
+    minimize: true
   },
   externals: {
     'miniprogram-element': `require("miniprogram-element")`,
