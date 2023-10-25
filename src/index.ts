@@ -1,7 +1,6 @@
 import mp from 'miniprogram-render';
 import React from "react";
 import ReactDOM from 'react-dom';
-import * as kboneUI from 'kbone-ui';
 import resolve, { registerToGlobleScope } from 'kbs-dsl-resolver';
 import dslLoad from 'kbs-dsl-loader';
 import isEqual from 'lodash-es/isEqual';
@@ -22,29 +21,60 @@ interface Props {
   nameSpace?: string;
 }
 
-const {
-  createElement,
-  useState,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useMemo,
-  useCallback,
-} = React;
+const { createElement } = React;
+
+/**
+ * 通过 Object.keys 来劫持 miniprogram-element
+ */
+const events = [
+  'chooseavatar',
+  'getuserinfo'
+];
+const keys = Object.keys;
+Object.keys = function(obj: Object) {
+  if (obj['cover-image'] && obj['cover-image'].handles) {
+    // 定位到 miniprogram-element/src/utl/component.js
+    Object.values(obj).forEach(({ handles }) => {
+      handles && keys(handles).forEach((key) => {
+        const handle = handles[key];
+        handles[key] = function(evt: any) {
+          handle.call(this, evt);
+          const { type } = evt;
+          // 借道 scroll 事件
+          if (events.includes(type)) {
+            this.callSimpleEvent('scroll', evt);
+          }
+        }
+      });
+    });
+    // 不再劫持
+    Object.keys = keys;
+  }
+  return keys.call(this, obj);
+};
+
+function wxReactCreateElement(component, props, ...others) {
+  if (component !== 'wx-scroll-view') {
+    keys(props).forEach(propKey => {
+      const eventName = propKey.replace(/^on/, '').toLowerCase();
+      if (events.includes(eventName)) {
+        // 替换 propKey
+        props.onScroll = props[propKey];
+        // 不支持的事件，直接删除(其实也可以保留)
+        delete props[propKey];
+      }
+    });
+  }
+  // @ts-ignore
+  return createElement.call(this, component, props, ...others);
+};
 
 // 动态挂载 React
 registerToGlobleScope({
-  React,
-  /** react 相关接口 */
-  // 渲染函数
-  createElement,
-  useState,
-  useEffect,
-  useMemo,
-  useLayoutEffect,
-  useRef,
-  useCallback,
-  ...kboneUI
+  React: {
+    ...React,
+    createElement: wxReactCreateElement
+  }
 });
 
 const config = {

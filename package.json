@@ -1,6 +1,6 @@
 {
   "name": "kb-smart-component",
-  "version": "0.0.19",
+  "version": "0.0.20",
   "description": "基于 kbone 的异步加载组件的渲染器",
   "main": "./dist/index.js",
   "miniprogram": "dist",
@@ -40,7 +40,6 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.23.1",
-    "kbone-ui": "^1.0.14",
     "kbs-dsl-loader": "^1.0.3",
     "kbs-dsl-resolver": "^1.0.18",
     "lodash-es": "^4.17.21",
