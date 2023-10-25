@@ -191,7 +191,7 @@ d);e&&g&&(1!==a.rangeCount||a.anchorNode!==e.node||a.anchorOffset!==e.offset||a.
 var Pe=ia&&"documentMode"in document&&11>=document.documentMode,Qe=null,Re=null,Se=null,Te=!1;
 function Ue(a,b,c){var d=c.window===c?c.document:9===c.nodeType?c:c.ownerDocument;Te||null==Qe||Qe!==Xa(d)||(d=Qe,"selectionStart"in d&&Ne(d)?d={start:d.selectionStart,end:d.selectionEnd}:(d=(d.ownerDocument&&d.ownerDocument.defaultView||window).getSelection(),d={anchorNode:d.anchorNode,anchorOffset:d.anchorOffset,focusNode:d.focusNode,focusOffset:d.focusOffset}),Se&&Ie(Se,d)||(Se=d,d=oe(Re,"onSelect"),0<d.length&&(b=new td("onSelect","select",null,b,c),a.push({event:b,listeners:d}),b.target=Qe)))}
 function Ve(a,b){var c={};c[a.toLowerCase()]=b.toLowerCase();c["Webkit"+a]="webkit"+b;c["Moz"+a]="moz"+b;return c}var We={animationend:Ve("Animation","AnimationEnd"),animationiteration:Ve("Animation","AnimationIteration"),animationstart:Ve("Animation","AnimationStart"),transitionend:Ve("Transition","TransitionEnd")},Xe={},Ye={};
-ia&&(Ye=document.createElement("div").style,"AnimationEvent"in window||(delete We.animationend.animation,delete We.animationiteration.animation,delete We.animationstart.animation),"TransitionEvent"in window||delete We.transitionend.transition);function Ze(a){if(Xe[a])return Xe[a];if(!We[a])return a;var b=We[a],c;for(c in b)if(b.hasOwnProperty(c)&&c in Ye)return Xe[a]=b[c];return a}var $e=Ze("animationend"),af=Ze("animationiteration"),bf=Ze("animationstart"),cf=Ze("transitionend"),df=new Map,ef="abort auxClick cancel canPlay canPlayThrough chooseAvatar click close contextMenu copy cut drag dragEnd dragEnter dragExit dragLeave dragOver dragStart drop durationChange emptied encrypted ended error gotPointerCapture input invalid keyDown keyPress keyUp load loadedData loadedMetadata loadStart lostPointerCapture mouseDown mouseMove mouseOut mouseOver mouseUp paste pause play playing pointerCancel pointerDown pointerMove pointerOut pointerOver pointerUp progress rateChange reset resize seeked seeking stalled submit suspend timeUpdate touchCancel touchEnd touchStart volumeChange scroll toggle touchMove waiting wheel".split(" ");
+ia&&(Ye=document.createElement("div").style,"AnimationEvent"in window||(delete We.animationend.animation,delete We.animationiteration.animation,delete We.animationstart.animation),"TransitionEvent"in window||delete We.transitionend.transition);function Ze(a){if(Xe[a])return Xe[a];if(!We[a])return a;var b=We[a],c;for(c in b)if(b.hasOwnProperty(c)&&c in Ye)return Xe[a]=b[c];return a}var $e=Ze("animationend"),af=Ze("animationiteration"),bf=Ze("animationstart"),cf=Ze("transitionend"),df=new Map,ef="abort auxClick cancel canPlay canPlayThrough click close contextMenu copy cut drag dragEnd dragEnter dragExit dragLeave dragOver dragStart drop durationChange emptied encrypted ended error gotPointerCapture input invalid keyDown keyPress keyUp load loadedData loadedMetadata loadStart lostPointerCapture mouseDown mouseMove mouseOut mouseOver mouseUp paste pause play playing pointerCancel pointerDown pointerMove pointerOut pointerOver pointerUp progress rateChange reset resize seeked seeking stalled submit suspend timeUpdate touchCancel touchEnd touchStart volumeChange scroll toggle touchMove waiting wheel".split(" ");
 function ff(a,b){df.set(a,b);fa(b,[a])}for(var gf=0;gf<ef.length;gf++){var hf=ef[gf],jf=hf.toLowerCase(),kf=hf[0].toUpperCase()+hf.slice(1);ff(jf,"on"+kf)}ff($e,"onAnimationEnd");ff(af,"onAnimationIteration");ff(bf,"onAnimationStart");ff("dblclick","onDoubleClick");ff("focusin","onFocus");ff("focusout","onBlur");ff(cf,"onTransitionEnd");ha("onMouseEnter",["mouseout","mouseover"]);ha("onMouseLeave",["mouseout","mouseover"]);ha("onPointerEnter",["pointerout","pointerover"]);
 ha("onPointerLeave",["pointerout","pointerover"]);fa("onChange","change click focusin focusout input keydown keyup selectionchange".split(" "));fa("onSelect","focusout contextmenu dragend focusin keydown keyup mousedown mouseup selectionchange".split(" "));fa("onBeforeInput",["compositionend","keypress","textInput","paste"]);fa("onCompositionEnd","compositionend focusout keydown keypress keyup mousedown".split(" "));fa("onCompositionStart","compositionstart focusout keydown keypress keyup mousedown".split(" "));
 fa("onCompositionUpdate","compositionupdate focusout keydown keypress keyup mousedown".split(" "));var lf="abort canplay canplaythrough durationchange emptied encrypted ended error loadeddata loadedmetadata loadstart pause play playing progress ratechange resize seeked seeking stalled suspend timeupdate volumechange waiting".split(" "),mf=new Set("cancel close invalid load scroll toggle".split(" ").concat(lf));
@@ -3025,7 +3025,7 @@ var createElement = react.createElement;
 /**
  * 通过 Object.keys 来劫持 miniprogram-element
  */
-var events = ['chooseavatar', 'getuserinfo'];
+var events = ['scroll', 'chooseavatar', 'getuserinfo', 'contact', 'getphonenumber', 'getrealtimephonenumber', 'opensetting', 'launchapp', 'agreeprivacyauthorization', 'scrolltoupper', 'scrolltolower', 'refresherpulling', 'refresherrefresh', 'refresherrestore', 'refresherabort'];
 var index_keys = Object.keys;
 Object.keys = function (obj) {
   if (obj['cover-image'] && obj['cover-image'].handles) {
@@ -3039,6 +3039,10 @@ Object.keys = function (obj) {
           var type = evt.type;
           // 借道 scroll 事件
           if (events.includes(type)) {
+            // 加到 detail 中
+            evt.detail && Object.assign(evt.detail, {
+              eventName: type
+            });
             this.callSimpleEvent('scroll', evt);
           }
         };
@@ -3050,16 +3054,42 @@ Object.keys = function (obj) {
   return index_keys.call(this, obj);
 };
 function wxReactCreateElement(component, props) {
-  if (component !== 'wx-scroll-view') {
+  if (props) {
+    var eventHandlers = [];
     index_keys(props).forEach(function (propKey) {
       var eventName = propKey.replace(/^on/, '').toLowerCase();
       if (events.includes(eventName)) {
-        // 替换 propKey
-        props.onScroll = props[propKey];
+        // 存放到 eventHandlers
+        eventHandlers.push({
+          eventName: eventName,
+          propKey: propKey,
+          handler: props[propKey]
+        });
         // 不支持的事件，直接删除(其实也可以保留)
         delete props[propKey];
       }
     });
+    props.onScroll = function (evt) {
+      var _this = this;
+      eventHandlers.some(function (_ref2) {
+        var _evt$detail;
+        var eventName = _ref2.eventName,
+          propKey = _ref2.propKey,
+          handler = _ref2.handler;
+        if ((evt === null || evt === void 0 ? void 0 : (_evt$detail = evt.detail) === null || _evt$detail === void 0 ? void 0 : _evt$detail.eventName) === eventName) {
+          Object.assign(evt, {
+            type: eventName,
+            _reactName: propKey
+          });
+          evt.nativeEvent && Object.assign(evt.nativeEvent, {
+            $_name: eventName
+          });
+          handler.call(_this, evt);
+          return true;
+        }
+        return false;
+      });
+    };
   }
   // @ts-ignore
   for (var _len = arguments.length, others = new Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
@@ -3121,7 +3151,7 @@ Component({
     // @ts-ignore
     if (this.mpRender) {
       // @ts-ignore
-      this.mpRender.document.body.$$recycle(); // 回收 dom 节点
+      // this.mpRender.document.body.$$recycle(); // 回收 dom 节点 ---- 如果开启会有BUG
       // @ts-ignore
       this.mpRender.window.$$destroy();
     }
@@ -3143,13 +3173,13 @@ Component({
     },
     // 执行渲染
     render: function render() {
-      var _this = this;
+      var _this2 = this;
       return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-        var _ref2, dslJson, url, dslUrl, watch, watchOptions;
+        var _ref3, dslJson, url, dslUrl, watch, watchOptions;
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {
             case 0:
-              _ref2 = _this.properties.props, dslJson = _ref2.dslJson, url = _ref2.url, dslUrl = _ref2.dslUrl, watch = _ref2.watch, watchOptions = _ref2.watchOptions;
+              _ref3 = _this2.properties.props, dslJson = _ref3.dslJson, url = _ref3.url, dslUrl = _ref3.dslUrl, watch = _ref3.watch, watchOptions = _ref3.watchOptions;
               if (dslJson) {
                 _context.next = 5;
                 break;
@@ -3161,17 +3191,17 @@ Component({
                 watch: watch,
                 watchOptions: _objectSpread(_objectSpread({}, watchOptions), {}, {
                   update: function update(newDslJson) {
-                    _this.update(newDslJson, true);
+                    _this2.update(newDslJson, true);
                   }
                 })
               });
             case 4:
               dslJson = _context.sent;
             case 5:
-              _this.update(dslJson);
+              _this2.update(dslJson);
               // @ts-ignore
-              _this.setData({
-                pageId: _this.mpRender.pageId
+              _this2.setData({
+                pageId: _this2.mpRender.pageId
               });
             case 7:
             case "end":

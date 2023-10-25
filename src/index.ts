@@ -27,8 +27,72 @@ const { createElement } = React;
  * 通过 Object.keys 来劫持 miniprogram-element
  */
 const events = [
+  'scroll',
   'chooseavatar',
-  'getuserinfo'
+  'getuserinfo',
+  'contact',
+  'getphonenumber',
+  'getrealtimephonenumber',
+  'opensetting',
+  'launchapp',
+  'agreeprivacyauthorization',
+  'scrolltoupper',
+  'scrolltolower',
+  'refresherpulling',
+  'refresherrefresh',
+  'refresherrestore',
+  'refresherabort',
+  'activeend',
+  'statuschange',
+  'ready',
+  'confirm',
+  'keyboardheightchange',
+  'nicknamereview',
+  'columnchange',
+  'pickstart',
+  'pickend',
+  'changing',
+  'linechange',
+  'success',
+  'fail',
+  'complete',
+  'ended',
+  'imeupdate',
+  'stop',
+  'initdone',
+  'scancode',
+  'statechange',
+  'fullscreenchange',
+  'netstatus',
+  'audiovolumenotify',
+  'enterpictureinpicture',
+  'leavepictureinpicture',
+  'castinguserselect',
+  'castingstatechange',
+  'castinginterrupt',
+  'bgmstart',
+  'bgmprogress',
+  'bgmcomplete',
+  'waiting',
+  'progress',
+  'loadedmetadata',
+  'controlstoggle',
+  'seekcomplete',
+  'tap',
+  'markertap',
+  'labeltap',
+  'controltap',
+  'callouttap',
+  'updated',
+  'regionchange',
+  'poitap',
+  'polylinetap',
+  'abilitysuccess',
+  'abilityfailed',
+  'authsuccess',
+  'interpolatepoint',
+  'longtap',
+  ''
 ];
 const keys = Object.keys;
 Object.keys = function(obj: Object) {
@@ -42,6 +106,8 @@ Object.keys = function(obj: Object) {
           const { type } = evt;
           // 借道 scroll 事件
           if (events.includes(type)) {
+            // 加到 detail 中
+            evt.detail && Object.assign(evt.detail, { eventName: type });
             this.callSimpleEvent('scroll', evt);
           }
         }
@@ -54,16 +120,37 @@ Object.keys = function(obj: Object) {
 };
 
 function wxReactCreateElement(component, props, ...others) {
-  if (component !== 'wx-scroll-view') {
+  if (props) {
+    const eventHandlers: { eventName: string; propKey: string; handler: any }[] = [];
     keys(props).forEach(propKey => {
       const eventName = propKey.replace(/^on/, '').toLowerCase();
       if (events.includes(eventName)) {
-        // 替换 propKey
-        props.onScroll = props[propKey];
+        // 存放到 eventHandlers
+        eventHandlers.push({
+          eventName,
+          propKey,
+          handler: props[propKey]
+        })
         // 不支持的事件，直接删除(其实也可以保留)
         delete props[propKey];
       }
     });
+    props.onScroll = function(evt: any) {
+      eventHandlers.some(({ eventName, propKey, handler }) => {
+        if (evt?.detail?.eventName === eventName) {
+          Object.assign(evt, {
+            type: eventName,
+            _reactName: propKey
+          })
+          evt.nativeEvent && Object.assign(evt.nativeEvent, {
+            $_name: eventName
+          });
+          handler.call(this, evt);
+          return true;
+        }
+        return false;
+      });
+    };
   }
   // @ts-ignore
   return createElement.call(this, component, props, ...others);
@@ -121,7 +208,7 @@ Component({
     // @ts-ignore
     if (this.mpRender) {
       // @ts-ignore
-      this.mpRender.document.body.$$recycle(); // 回收 dom 节点
+      // this.mpRender.document.body.$$recycle(); // 回收 dom 节点 ---- 如果开启会有BUG
       // @ts-ignore
       this.mpRender.window.$$destroy();
     }
