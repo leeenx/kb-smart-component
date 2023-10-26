@@ -91,8 +91,7 @@ const events = [
   'abilityfailed',
   'authsuccess',
   'interpolatepoint',
-  'longtap',
-  ''
+  'longtap'
 ];
 const keys = Object.keys;
 Object.keys = function(obj: Object) {
@@ -253,6 +252,8 @@ Component({
       this.update(dslJson);
       // @ts-ignore
       this.setData({ pageId: this.mpRender.pageId });
+      // @ts-ignore
+      this.triggerEvent('load');
     },
   },
   // 监听

@@ -3025,7 +3025,7 @@ var createElement = react.createElement;
 /**
  * 通过 Object.keys 来劫持 miniprogram-element
  */
-var events = ['scroll', 'chooseavatar', 'getuserinfo', 'contact', 'getphonenumber', 'getrealtimephonenumber', 'opensetting', 'launchapp', 'agreeprivacyauthorization', 'scrolltoupper', 'scrolltolower', 'refresherpulling', 'refresherrefresh', 'refresherrestore', 'refresherabort'];
+var events = ['scroll', 'chooseavatar', 'getuserinfo', 'contact', 'getphonenumber', 'getrealtimephonenumber', 'opensetting', 'launchapp', 'agreeprivacyauthorization', 'scrolltoupper', 'scrolltolower', 'refresherpulling', 'refresherrefresh', 'refresherrestore', 'refresherabort', 'activeend', 'statuschange', 'ready', 'confirm', 'keyboardheightchange', 'nicknamereview', 'columnchange', 'pickstart', 'pickend', 'changing', 'linechange', 'success', 'fail', 'complete', 'ended', 'imeupdate', 'stop', 'initdone', 'scancode', 'statechange', 'fullscreenchange', 'netstatus', 'audiovolumenotify', 'enterpictureinpicture', 'leavepictureinpicture', 'castinguserselect', 'castingstatechange', 'castinginterrupt', 'bgmstart', 'bgmprogress', 'bgmcomplete', 'waiting', 'progress', 'loadedmetadata', 'controlstoggle', 'seekcomplete', 'tap', 'markertap', 'labeltap', 'controltap', 'callouttap', 'updated', 'regionchange', 'poitap', 'polylinetap', 'abilitysuccess', 'abilityfailed', 'authsuccess', 'interpolatepoint', 'longtap'];
 var index_keys = Object.keys;
 Object.keys = function (obj) {
   if (obj['cover-image'] && obj['cover-image'].handles) {
@@ -3203,7 +3203,9 @@ Component({
               _this2.setData({
                 pageId: _this2.mpRender.pageId
               });
-            case 7:
+              // @ts-ignore
+              _this2.triggerEvent('load');
+            case 8:
             case "end":
               return _context.stop();
           }
