@@ -237,17 +237,21 @@ Component({
         watchOptions
       } = this.properties.props as Props;
       if (!dslJson) {
-        dslJson = await dslLoad({
-          url: url || dslUrl || '',
-          fromHtml: Boolean(url),
-          watch,
-          watchOptions: {
-            ...watchOptions,
-            update: (newDslJson) => {
-              this.update(newDslJson, true);
+        try {
+          dslJson = await dslLoad({
+            url: url || dslUrl || '',
+            fromHtml: Boolean(url),
+            watch,
+            watchOptions: {
+              ...watchOptions,
+              update: (newDslJson) => {
+                this.update(newDslJson, true);
+              }
             }
-          }
-        });
+          });
+        } catch {
+          this.triggerEvent('error');
+        }
       }
       this.update(dslJson);
       // @ts-ignore
