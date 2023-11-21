@@ -220,7 +220,8 @@ Component({
       // @ts-ignore
       const nameSpace = this.properties.props.nameSpace || this.pageId;
       // commonjs 标准
-      const { default: MyComponent } = resolve(dslJson, nameSpace, hotUpdating);
+      const resolvedModule = resolve(dslJson, nameSpace, hotUpdating);
+      const { default: MyComponent } = resolvedModule;
       ReactDOM.render(
         createElement(MyComponent, null, null),
         // @ts-ignore
