@@ -119,7 +119,16 @@ Object.keys = function(obj: Object) {
 };
 
 function wxReactCreateElement(component, props, ...others) {
-  if (props) {
+  if (
+    (
+      typeof component === 'string' &&
+      (
+        component === 'button' ||
+        component.indexOf('wx-') === 0
+      )
+    ) &&
+    props
+  ) {
     const eventHandlers: { eventName: string; propKey: string; handler: any }[] = [];
     keys(props).forEach(propKey => {
       const eventName = propKey.replace(/^on/, '').toLowerCase();

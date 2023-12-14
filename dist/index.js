@@ -3054,7 +3054,7 @@ Object.keys = function (obj) {
   return index_keys.call(this, obj);
 };
 function wxReactCreateElement(component, props) {
-  if (props) {
+  if (typeof component === 'string' && (component === 'button' || component.indexOf('wx-') === 0) && props) {
     var eventHandlers = [];
     index_keys(props).forEach(function (propKey) {
       var eventName = propKey.replace(/^on/, '').toLowerCase();
