@@ -3175,36 +3175,34 @@ Component({
     render: function render() {
       var _this2 = this;
       return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-        var _ref3, dslJson, url, dslUrl, watch, watchOptions;
+        var _ref3, dslJson, url, watchOptions;
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {
             case 0:
-              _ref3 = _this2.properties.props, dslJson = _ref3.dslJson, url = _ref3.url, dslUrl = _ref3.dslUrl, watch = _ref3.watch, watchOptions = _ref3.watchOptions;
+              _ref3 = _this2.properties.props, dslJson = _ref3.dslJson, url = _ref3.url, watchOptions = _ref3.watchOptions;
               if (dslJson) {
-                _context.next = 11;
+                _context.next = 12;
                 break;
               }
               _context.prev = 2;
               _context.next = 5;
-              return external_require_kbs_dsl_loader_default()({
-                url: url || dslUrl || '',
-                fromHtml: Boolean(url),
-                watch: watch,
-                watchOptions: _objectSpread(_objectSpread({}, watchOptions), {}, {
+              return external_require_kbs_dsl_loader_default()(url);
+            case 5:
+              dslJson = _context.sent;
+              if (watchOptions) {
+                (0,external_require_kbs_dsl_loader_namespaceObject.watch)(_objectSpread(_objectSpread({}, watchOptions), {}, {
                   update: function update(newDslJson) {
                     _this2.update(newDslJson, true);
                   }
-                })
-              });
-            case 5:
-              dslJson = _context.sent;
-              _context.next = 11;
+                }));
+              }
+              _context.next = 12;
               break;
-            case 8:
-              _context.prev = 8;
+            case 9:
+              _context.prev = 9;
               _context.t0 = _context["catch"](2);
               _this2.triggerEvent('error');
-            case 11:
+            case 12:
               _this2.update(dslJson);
               // @ts-ignore
               _this2.setData({
@@ -3212,11 +3210,11 @@ Component({
               });
               // @ts-ignore
               _this2.triggerEvent('load');
-            case 14:
+            case 15:
             case "end":
               return _context.stop();
           }
-        }, _callee, null, [[2, 8]]);
+        }, _callee, null, [[2, 9]]);
       }))();
     }
   },

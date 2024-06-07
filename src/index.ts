@@ -2,7 +2,7 @@ import mp from 'miniprogram-render';
 import React from "react";
 import ReactDOM from 'react-dom';
 import resolve, { registerToGlobleScope } from 'kbs-dsl-resolver';
-import dslLoad from 'kbs-dsl-loader';
+import load, { watch } from 'kbs-dsl-loader';
 import isEqual from 'lodash-es/isEqual';
 
 interface WatchOptions {
@@ -242,23 +242,19 @@ Component({
       let {
         dslJson,
         url,
-        dslUrl,
-        watch,
         watchOptions
       } = this.properties.props as Props;
       if (!dslJson) {
         try {
-          dslJson = await dslLoad({
-            url: url || dslUrl || '',
-            fromHtml: Boolean(url),
-            watch,
-            watchOptions: {
+          dslJson = await load(url);
+          if (watchOptions) {
+            watch({
               ...watchOptions,
               update: (newDslJson) => {
                 this.update(newDslJson, true);
               }
-            }
-          });
+            });
+          }
         } catch {
           this.triggerEvent('error');
         }
