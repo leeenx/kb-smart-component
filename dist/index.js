@@ -3166,7 +3166,8 @@ Component({
       var nameSpace = this.properties.props.nameSpace || this.pageId;
       // commonjs 标准
       var resolvedModule = external_require_kbs_dsl_resolver_default()(dslJson, nameSpace, hotUpdating);
-      var MyComponent = resolvedModule.default;
+      var pageName = this.properties.props.pageName || 'default';
+      var MyComponent = resolvedModule[pageName];
       react_dom_default().render(createElement(MyComponent, null, null),
       // @ts-ignore
       this.container);
