@@ -1,1 +1,1 @@
-<element wx:if="{{pageId}}" data-private-node-id="e-body" data-private-page-id="{{pageId}}" />
+<element class="miniprogram-element" wx:if="{{pageId}}" data-private-node-id="e-body" data-private-page-id="{{pageId}}" />

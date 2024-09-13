@@ -1,7 +1,7 @@
 import mp from 'miniprogram-render';
 import React from "react";
 import ReactDOM from 'react-dom';
-import resolve, { registerToGlobleScope } from 'kbs-dsl-resolver';
+import resolve, { registerToGlobleScope, registerToScope } from 'kbs-dsl-resolver';
 import load, { watch } from 'kbs-dsl-loader';
 import isEqual from 'lodash-es/isEqual';
 
@@ -91,7 +91,7 @@ const events = [
   'abilityfailed',
   'authsuccess',
   'interpolatepoint',
-  'longtap'
+  'longtap',
 ];
 const keys = Object.keys;
 Object.keys = function(obj: Object) {
@@ -227,11 +227,12 @@ Component({
     // 刷新组件
     update(dslJson, hotUpdating = false) {
       // @ts-ignore
-      const nameSpace = this.properties.props.nameSpace || this.pageId;
+      const nameSpace = this.properties.props.nameSpace;
       // commonjs 标准
       const resolvedModule = resolve(dslJson, nameSpace, hotUpdating);
       const pageName = this.properties.props.pageName || 'default';
       const MyComponent = resolvedModule[pageName];
+      // registerToScope(nameSpace, { thisPointer: this.mpRender });
       ReactDOM.render(
         createElement(MyComponent, null, null),
         // @ts-ignore
@@ -263,6 +264,7 @@ Component({
       this.update(dslJson);
       // @ts-ignore
       this.setData({ pageId: this.mpRender.pageId });
+
       // @ts-ignore
       this.triggerEvent('load');
     },
@@ -277,6 +279,13 @@ Component({
       }
       // @ts-ignore
       this.prevProps = props;
+      // @ts-ignore
+      const nameSpace = this.properties.props?.nameSpace;
+      if (nameSpace) {
+        registerToScope(nameSpace, {
+          getThisPointer: () => this.selectComponent('.miniprogram-element')
+        });
+      }
       // @ts-ignore
       if (this.hasAttached) {
         this.render();

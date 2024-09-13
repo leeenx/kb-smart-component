@@ -3163,11 +3163,12 @@ Component({
     update: function update(dslJson) {
       var hotUpdating = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
       // @ts-ignore
-      var nameSpace = this.properties.props.nameSpace || this.pageId;
+      var nameSpace = this.properties.props.nameSpace;
       // commonjs 标准
       var resolvedModule = external_require_kbs_dsl_resolver_default()(dslJson, nameSpace, hotUpdating);
       var pageName = this.properties.props.pageName || 'default';
       var MyComponent = resolvedModule[pageName];
+      // registerToScope(nameSpace, { thisPointer: this.mpRender });
       react_dom_default().render(createElement(MyComponent, null, null),
       // @ts-ignore
       this.container);
@@ -3209,6 +3210,7 @@ Component({
               _this2.setData({
                 pageId: _this2.mpRender.pageId
               });
+
               // @ts-ignore
               _this2.triggerEvent('load');
             case 15:
@@ -3222,6 +3224,8 @@ Component({
   // 监听
   observers: {
     'props': function props(_props) {
+      var _this$properties$prop,
+        _this3 = this;
       // @ts-ignore
       if (lodash_es_isEqual(this.prevProps, _props)) {
         // 表示不需要更新
@@ -3229,6 +3233,15 @@ Component({
       }
       // @ts-ignore
       this.prevProps = _props;
+      // @ts-ignore
+      var nameSpace = (_this$properties$prop = this.properties.props) === null || _this$properties$prop === void 0 ? void 0 : _this$properties$prop.nameSpace;
+      if (nameSpace) {
+        (0,external_require_kbs_dsl_resolver_namespaceObject.registerToScope)(nameSpace, {
+          getThisPointer: function getThisPointer() {
+            return _this3.selectComponent('.miniprogram-element');
+          }
+        });
+      }
       // @ts-ignore
       if (this.hasAttached) {
         this.render();
