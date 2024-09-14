@@ -1,7 +1,9 @@
 import mp from 'miniprogram-render';
 import React from "react";
 import ReactDOM from 'react-dom';
+//@ts-ignore
 import resolve, { registerToGlobleScope, registerToScope } from 'kbs-dsl-resolver';
+//@ts-ignore
 import load, { watch } from 'kbs-dsl-loader';
 import isEqual from 'lodash-es/isEqual';
 
@@ -19,6 +21,10 @@ interface Props {
   url?: string;
   dslUrl?: string;
   nameSpace?: string;
+  enableCache?: boolean;
+  cacheName?: string;
+  cacheTime?: number;
+  cacheMaxSize?: number;
 }
 
 const { createElement } = React;
@@ -244,11 +250,15 @@ Component({
       let {
         dslJson,
         url,
-        watchOptions
+        watchOptions,
+        enableCache,
+        cacheName,
+        cacheTime,
+        cacheMaxSize,
       } = this.properties.props as Props;
       if (!dslJson) {
         try {
-          dslJson = await load(url);
+          dslJson = await load(url, enableCache, cacheName, cacheTime, cacheMaxSize);
           if (watchOptions) {
             watch({
               ...watchOptions,

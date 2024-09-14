@@ -1,6 +1,6 @@
 {
   "name": "kb-smart-component",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "基于 kbone 的异步加载组件的渲染器",
   "main": "./dist/index.js",
   "miniprogram": "dist",

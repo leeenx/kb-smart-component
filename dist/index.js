@@ -3017,7 +3017,9 @@ function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input ==
 
 
 
+//@ts-ignore
 
+//@ts-ignore
 
 
 var createElement = react.createElement;
@@ -3177,18 +3179,18 @@ Component({
     render: function render() {
       var _this2 = this;
       return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-        var _ref3, dslJson, url, watchOptions;
+        var _ref3, dslJson, url, watchOptions, enableCache, cacheName, cacheTime, cacheMaxSize;
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {
             case 0:
-              _ref3 = _this2.properties.props, dslJson = _ref3.dslJson, url = _ref3.url, watchOptions = _ref3.watchOptions;
+              _ref3 = _this2.properties.props, dslJson = _ref3.dslJson, url = _ref3.url, watchOptions = _ref3.watchOptions, enableCache = _ref3.enableCache, cacheName = _ref3.cacheName, cacheTime = _ref3.cacheTime, cacheMaxSize = _ref3.cacheMaxSize;
               if (dslJson) {
                 _context.next = 12;
                 break;
               }
               _context.prev = 2;
               _context.next = 5;
-              return external_require_kbs_dsl_loader_default()(url);
+              return external_require_kbs_dsl_loader_default()(url, enableCache, cacheName, cacheTime, cacheMaxSize);
             case 5:
               dslJson = _context.sent;
               if (watchOptions) {
