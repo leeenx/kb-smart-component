@@ -2,7 +2,7 @@ import mp from 'miniprogram-render';
 import React from "react";
 import ReactDOM from 'react-dom';
 //@ts-ignore
-import resolve, { registerToGlobleScope, registerToScope } from 'kbs-dsl-resolver';
+import resolve, { registerToGlobleScope, registerToScope, recyleMemoCache } from 'kbs-dsl-resolver';
 //@ts-ignore
 import load, { watch } from 'kbs-dsl-loader';
 import isEqual from 'lodash-es/isEqual';
@@ -22,6 +22,7 @@ interface Props {
   dslUrl?: string;
   nameSpace?: string;
   enableCache?: boolean;
+  cacheCount?: number;
   cacheName?: string;
   cacheTime?: number;
   cacheMaxSize?: number;
@@ -228,6 +229,12 @@ Component({
       // @ts-ignore
       this.mpRender.window.$$destroy();
     }
+    // 缓存回收
+    // @ts-ignore
+    if (this.memoCacheStackItem) {
+      // @ts-ignore
+      recyleMemoCache(this.properties.props.nameSpace, this.memoCacheStackItem);
+    }
     // @ts-ignore
     mp.destroyPage(this.pageId);
   },
@@ -235,9 +242,19 @@ Component({
     // 刷新组件
     update(dslJson, hotUpdating = false) {
       // @ts-ignore
-      const { nameSpace, enableCache } = this.properties.props;
+      const { nameSpace, enableCache, cacheCount = 2 } = this.properties.props;
       // commonjs 标准
-      const resolvedModule = resolve(dslJson, nameSpace, enableCache, hotUpdating);
+      const resolvedModule = resolve(
+        dslJson,
+        nameSpace,
+        enableCache,
+        cacheCount,
+        (memoCacheStackItem: any) => {
+          //@ts-ignore
+          this.memoCacheStackItem = memoCacheStackItem;
+        },
+        hotUpdating,
+      );
       const pageName = this.properties.props.pageName || 'default';
       const MyComponent = resolvedModule[pageName];
       ReactDOM.render(
