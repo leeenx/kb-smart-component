@@ -25,6 +25,8 @@ interface Props {
   cacheName?: string;
   cacheTime?: number;
   cacheMaxSize?: number;
+  pageName?: string;
+  pageId?: string;
 }
 
 const { createElement } = React;
@@ -233,12 +235,11 @@ Component({
     // 刷新组件
     update(dslJson, hotUpdating = false) {
       // @ts-ignore
-      const nameSpace = this.properties.props.nameSpace;
+      const { nameSpace, enableCache } = this.properties.props;
       // commonjs 标准
-      const resolvedModule = resolve(dslJson, nameSpace, hotUpdating);
+      const resolvedModule = resolve(dslJson, nameSpace, enableCache, hotUpdating);
       const pageName = this.properties.props.pageName || 'default';
       const MyComponent = resolvedModule[pageName];
-      // registerToScope(nameSpace, { thisPointer: this.mpRender });
       ReactDOM.render(
         createElement(MyComponent, null, null),
         // @ts-ignore
@@ -250,6 +251,9 @@ Component({
       let {
         dslJson,
         url,
+        nameSpace,
+        pageName,
+        pageId,
         watchOptions,
         enableCache,
         cacheName,
@@ -272,8 +276,13 @@ Component({
         }
       }
       this.update(dslJson);
-      // @ts-ignore
-      this.setData({ pageId: this.mpRender.pageId });
+      this.setData({
+        // @ts-ignore
+        pageId: this.mpRender.pageId,
+        nameSpace,
+        wxPageName: pageName,
+        wxPageId: pageId
+      });
 
       // @ts-ignore
       this.triggerEvent('load');

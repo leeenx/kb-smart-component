@@ -3165,12 +3165,13 @@ Component({
     update: function update(dslJson) {
       var hotUpdating = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
       // @ts-ignore
-      var nameSpace = this.properties.props.nameSpace;
+      var _this$properties$prop = this.properties.props,
+        nameSpace = _this$properties$prop.nameSpace,
+        enableCache = _this$properties$prop.enableCache;
       // commonjs 标准
-      var resolvedModule = external_require_kbs_dsl_resolver_default()(dslJson, nameSpace, hotUpdating);
+      var resolvedModule = external_require_kbs_dsl_resolver_default()(dslJson, nameSpace, enableCache, hotUpdating);
       var pageName = this.properties.props.pageName || 'default';
       var MyComponent = resolvedModule[pageName];
-      // registerToScope(nameSpace, { thisPointer: this.mpRender });
       react_dom_default().render(createElement(MyComponent, null, null),
       // @ts-ignore
       this.container);
@@ -3179,11 +3180,11 @@ Component({
     render: function render() {
       var _this2 = this;
       return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-        var _ref3, dslJson, url, watchOptions, enableCache, cacheName, cacheTime, cacheMaxSize;
+        var _ref3, dslJson, url, nameSpace, pageName, pageId, watchOptions, enableCache, cacheName, cacheTime, cacheMaxSize;
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {
             case 0:
-              _ref3 = _this2.properties.props, dslJson = _ref3.dslJson, url = _ref3.url, watchOptions = _ref3.watchOptions, enableCache = _ref3.enableCache, cacheName = _ref3.cacheName, cacheTime = _ref3.cacheTime, cacheMaxSize = _ref3.cacheMaxSize;
+              _ref3 = _this2.properties.props, dslJson = _ref3.dslJson, url = _ref3.url, nameSpace = _ref3.nameSpace, pageName = _ref3.pageName, pageId = _ref3.pageId, watchOptions = _ref3.watchOptions, enableCache = _ref3.enableCache, cacheName = _ref3.cacheName, cacheTime = _ref3.cacheTime, cacheMaxSize = _ref3.cacheMaxSize;
               if (dslJson) {
                 _context.next = 12;
                 break;
@@ -3208,9 +3209,12 @@ Component({
               _this2.triggerEvent('error');
             case 12:
               _this2.update(dslJson);
-              // @ts-ignore
               _this2.setData({
-                pageId: _this2.mpRender.pageId
+                // @ts-ignore
+                pageId: _this2.mpRender.pageId,
+                nameSpace: nameSpace,
+                wxPageName: pageName,
+                wxPageId: pageId
               });
 
               // @ts-ignore
@@ -3226,7 +3230,7 @@ Component({
   // 监听
   observers: {
     'props': function props(_props) {
-      var _this$properties$prop,
+      var _this$properties$prop2,
         _this3 = this;
       // @ts-ignore
       if (lodash_es_isEqual(this.prevProps, _props)) {
@@ -3236,7 +3240,7 @@ Component({
       // @ts-ignore
       this.prevProps = _props;
       // @ts-ignore
-      var nameSpace = (_this$properties$prop = this.properties.props) === null || _this$properties$prop === void 0 ? void 0 : _this$properties$prop.nameSpace;
+      var nameSpace = (_this$properties$prop2 = this.properties.props) === null || _this$properties$prop2 === void 0 ? void 0 : _this$properties$prop2.nameSpace;
       if (nameSpace) {
         (0,external_require_kbs_dsl_resolver_namespaceObject.registerToScope)(nameSpace, {
           getThisPointer: function getThisPointer() {
